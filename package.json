@@ -1,0 +1,26 @@
+{
+  "name": "nodesql",
+  "version": "1.0.0",
+  "description": "sql queries practice",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoaquinC539/sqlNodeQueries.git"
+  },
+  "keywords": [
+    "sql",
+    "postgreSQL",
+    "SQL",
+    "node",
+    "express"
+  ],
+  "author": "JC",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JoaquinC539/sqlNodeQueries/issues"
+  },
+  "homepage": "https://github.com/JoaquinC539/sqlNodeQueries#readme"
+}
