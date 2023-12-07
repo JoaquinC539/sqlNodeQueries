@@ -1,11 +1,10 @@
 import { Router } from "express";
+import { VendedorController } from "../controllers/VendedorController";
 
 export class Routes{
     public routes:Router=Router();
-
+    private vendedorController:VendedorController=new VendedorController();
     constructor(){
-        this.routes.get('/test',(req,res)=>{
-            res.json({message:"test"})
-        })
+        this.routes.use("/",this.vendedorController.router)
     }
 }
