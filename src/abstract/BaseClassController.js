@@ -13,6 +13,10 @@ exports.BaseClassController = void 0;
 const UtilsService_1 = require("../services/UtilsService");
 const express_1 = require("express");
 class BaseClassController {
+    /**
+     *
+     * @param endpoint Endpoint to be opened to CRUD get, post and put "endpoint/id"
+     */
     constructor(endpoint) {
         this._utils = new UtilsService_1.UtilsService();
         this.index = (req, res) => __awaiter(this, void 0, void 0, function* () {
@@ -42,6 +46,11 @@ class BaseClassController {
             });
         });
         this.post = ((req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { error } = this.joi.postJoi.validate(req.body);
+            if (error) {
+                res.status(400).send({ error: true, failure: error });
+                return;
+            }
             this._service.post(req)
                 .then((data) => {
                 res.status(200).send(this._utils.parseGetData(data));
@@ -51,6 +60,11 @@ class BaseClassController {
             });
         }));
         this.put = ((req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { error } = this.joi.putJoi.validate(req.body);
+            if (error) {
+                res.status(400).send({ error: true, failure: error });
+                return;
+            }
             this._service.put(req)
                 .then((data) => {
                 res.status(200).send(this._utils.parseGetData(data));
@@ -70,12 +84,12 @@ class BaseClassController {
         });
         this.endpoint = endpoint;
         this.router = (0, express_1.Router)();
-        this.router.get(endpoint, this.index);
-        this.router.get(`${endpoint}/`, this.index);
-        this.router.post(endpoint, this.post);
-        this.router.put(`${endpoint}/:id`, this.put);
-        this.router.get(`${endpoint}/:id`, this.get);
-        this.router.delete(`${endpoint}/:id`, this.delete);
+        this.router.get(this.endpoint, this.index);
+        this.router.get(`${this.endpoint}/`, this.index);
+        this.router.post(this.endpoint, this.post);
+        this.router.put(`${this.endpoint}/:id`, this.put);
+        this.router.get(`${this.endpoint}/:id`, this.get);
+        this.router.delete(`${this.endpoint}/:id`, this.delete);
     }
 }
 exports.BaseClassController = BaseClassController;
