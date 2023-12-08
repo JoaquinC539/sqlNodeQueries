@@ -7,12 +7,16 @@ export interface Filter{
     value:string
 }
 
-
+/**
+ * @table Table of the database
+ * @indexFilters Filters of columns of the table to be able to be filtered
+ */
 export abstract class BaseClassService{
     private pool:Pool=(new DbConf()).pool;
     private _utils:UtilsService=new UtilsService();
     public indexFilters:string[];
     public  table:string
+
     constructor(table:string,indexFilters:string[]){
         this.table=table;
         this.indexFilters=indexFilters

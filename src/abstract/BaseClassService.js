@@ -12,6 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaseClassService = void 0;
 const DbConf_1 = require("../conf/DbConf");
 const UtilsService_1 = require("../services/UtilsService");
+/**
+ * @table Table of the database
+ * @indexFilters Filters of columns of the table to be able to be filtered
+ */
 class BaseClassService {
     constructor(table, indexFilters) {
         this.pool = (new DbConf_1.DbConf()).pool;

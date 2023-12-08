@@ -11,6 +11,10 @@ export abstract class BaseClassController{
     private _utils:UtilsService=new UtilsService();
     abstract _service:BaseClassService;
     abstract joi:JoiClass;
+    /**
+     * @indexFilters Filters available to be filtered using query params in the get url
+     */
+    abstract indexFilters:Array<string>
     public endpoint:string;
     /**
      * 
