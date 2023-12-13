@@ -7,7 +7,7 @@ import { VentasService } from "../services/VentasService";
 export class VentaController extends BaseClassController {
     private _ventas: VentasService;
     public ventasJoi: JoiClass;
-    public indexFilters: string[];
+    public indexFilters: string[]; 
 
     constructor() {
         super('/venta')

@@ -2,6 +2,7 @@ import { Request } from "express";
 import { Pool, QueryResult } from "pg";
 import { DbConf } from "../conf/DbConf";
 import { JSONObject, UtilsService } from "../services/UtilsService";
+import { ObjectSchema } from "joi";
 export interface Filter{
     tableField:string,
     value:string
@@ -10,18 +11,26 @@ export interface Filter{
 /**
  * @table Table of the database
  * @indexFilters Filters of columns of the table to be able to be filtered
+ * @joiSchema Schema necesary but optional to create tables with a default schema base on data types 
  */
 export abstract class BaseClassService{
     private pool:Pool=(new DbConf()).pool;
     private _utils:UtilsService=new UtilsService();
     public indexFilters:string[];
     public  table:string
+    private joiSchema:ObjectSchema| undefined
 
-    constructor(table:string,indexFilters:string[]){
+    constructor(table:string,indexFilters:string[],joiSchema?:ObjectSchema){
         this.table=table;
-        this.indexFilters=indexFilters
+        this.indexFilters=indexFilters;
+        this.joiSchema=joiSchema;
+        this.checkAndCreateTable();
     }
-
+/**
+ * 
+ * @param req request of http
+ * @returns query promise
+ */
     public index:Function = async (req:Request):Promise<any>=>{
         try {
             let queryCount:string=` SELECT COUNT(*) FROM ${this.table}`;
@@ -157,6 +166,42 @@ export abstract class BaseClassService{
             return new Promise((resolve,reject)=>{
                 reject({error:true,failure:error});
             });
+        }
+    }
+
+    private checkAndCreateTable:Function=async():Promise<any>=>{
+        if(this.joiSchema===undefined){
+            return;
+        }else{
+            let query:string=`CREATE TABLE IF NOT EXISTS ${this.table} (`
+            query+= `_id SERIAL PRIMARY KEY,`
+            const joiDetails=this.joiSchema.describe().keys;
+            for (const key in joiDetails){
+                const dataType:string=joiDetails[key].type
+                let typeSQL:string;
+                switch (dataType){
+                    case 'number':
+                        typeSQL='INT';
+                        break;
+                    case 'string':
+                        typeSQL="VARCHAR(255)";
+                        break;
+                    case 'boolean':
+                        typeSQL="BOOLEAN";
+                        break;
+                    default:
+                        typeSQL ="VARCHAR(255)";
+                        break;
+                }
+                query+=` ${key} ${typeSQL},`
+            }
+            query=query.slice(0,-1);
+            query+=")"
+            this.pool.query(query)
+            .then(()=>{
+                return;
+            })
+            
         }
     }
 }

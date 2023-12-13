@@ -9,45 +9,37 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Vendedor = void 0;
+exports.Cliente = void 0;
 const typeorm_1 = require("typeorm");
-let Vendedor = class Vendedor {
-    constructor(data) {
-        if (data) {
-            Object.assign(this, data);
-        }
-    }
+let Cliente = class Cliente {
 };
-exports.Vendedor = Vendedor;
+exports.Cliente = Cliente;
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    (0, typeorm_1.PrimaryGeneratedColumn)()
+    // @OneToMany(()=>InteraccionORM,interaccion=>interaccion.vendedor)
+    ,
     __metadata("design:type", Number)
-], Vendedor.prototype, "_id", void 0);
+], Cliente.prototype, "_id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Vendedor.prototype, "nombre", void 0);
+], Cliente.prototype, "nombre", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Vendedor.prototype, "apellido", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], Vendedor.prototype, "edad", void 0);
+], Cliente.prototype, "contacto", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Vendedor.prototype, "correo_electronico", void 0);
+], Cliente.prototype, "email", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", Boolean)
-], Vendedor.prototype, "activo", void 0);
-exports.Vendedor = Vendedor = __decorate([
+    __metadata("design:type", String)
+], Cliente.prototype, "direccion", void 0);
+exports.Cliente = Cliente = __decorate([
     (0, typeorm_1.Entity)({
-        name: "vendedores",
+        name: "clientes",
         orderBy: { "_id": "DESC" }
-    }),
-    __metadata("design:paramtypes", [Object])
-], Vendedor);
-//# sourceMappingURL=Vendedor.js.map
+    })
+], Cliente);
+//# sourceMappingURL=Cliente.js.map

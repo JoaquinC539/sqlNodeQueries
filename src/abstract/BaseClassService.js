@@ -15,11 +15,17 @@ const UtilsService_1 = require("../services/UtilsService");
 /**
  * @table Table of the database
  * @indexFilters Filters of columns of the table to be able to be filtered
+ * @joiSchema Schema necesary but optional to create tables with a default schema base on data types
  */
 class BaseClassService {
-    constructor(table, indexFilters) {
+    constructor(table, indexFilters, joiSchema) {
         this.pool = (new DbConf_1.DbConf()).pool;
         this._utils = new UtilsService_1.UtilsService();
+        /**
+         *
+         * @param req request of http
+         * @returns query promise
+         */
         this.index = (req) => __awaiter(this, void 0, void 0, function* () {
             try {
                 let queryCount = ` SELECT COUNT(*) FROM ${this.table}`;
@@ -160,8 +166,45 @@ class BaseClassService {
                 });
             }
         });
+        this.checkAndCreateTable = () => __awaiter(this, void 0, void 0, function* () {
+            if (this.joiSchema === undefined) {
+                return;
+            }
+            else {
+                let query = `CREATE TABLE IF NOT EXISTS ${this.table} (`;
+                query += `_id SERIAL PRIMARY KEY,`;
+                const joiDetails = this.joiSchema.describe().keys;
+                for (const key in joiDetails) {
+                    const dataType = joiDetails[key].type;
+                    let typeSQL;
+                    switch (dataType) {
+                        case 'number':
+                            typeSQL = 'INT';
+                            break;
+                        case 'string':
+                            typeSQL = "VARCHAR(255)";
+                            break;
+                        case 'boolean':
+                            typeSQL = "BOOLEAN";
+                            break;
+                        default:
+                            typeSQL = "VARCHAR(255)";
+                            break;
+                    }
+                    query += ` ${key} ${typeSQL},`;
+                }
+                query = query.slice(0, -1);
+                query += ")";
+                this.pool.query(query)
+                    .then(() => {
+                    return;
+                });
+            }
+        });
         this.table = table;
         this.indexFilters = indexFilters;
+        this.joiSchema = joiSchema;
+        this.checkAndCreateTable();
     }
 }
 exports.BaseClassService = BaseClassService;

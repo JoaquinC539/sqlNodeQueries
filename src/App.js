@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.App = void 0;
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
+require("reflect-metadata");
 const cors = require('cors');
 const Routes_1 = require("./routes/Routes");
 const Cors_1 = require("./conf/Cors");

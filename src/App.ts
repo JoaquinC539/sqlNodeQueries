@@ -1,6 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import path from 'path';
+import "reflect-metadata";
 const cors =require('cors')
 import { Routes } from './routes/Routes';
 import { Cors } from './conf/Cors';
@@ -29,7 +29,7 @@ export class App{
                 this.express.listen(port,()=>{
                     console.log("Server listenting at localhost:"+port);
                     resolve();
-                      }); 
+                      });  
             } catch (error) {
                 reject(error);
             }
