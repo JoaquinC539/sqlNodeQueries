@@ -18,6 +18,12 @@ const UtilsService_1 = require("../services/UtilsService");
  * @joiSchema Schema necesary but optional to create tables with a default schema base on data types
  */
 class BaseClassService {
+    /**
+     *
+     * @param table Table of the database
+     * @param indexFilters Filters of columns of the table to be able to be filtered
+     * @param joiSchema Schema necesary but optional to create tables with a default schema base on data types
+     */
     constructor(table, indexFilters, joiSchema) {
         this.pool = (new DbConf_1.DbConf()).pool;
         this._utils = new UtilsService_1.UtilsService();
@@ -105,8 +111,8 @@ class BaseClassService {
                         reject({ error: true, failure: 'No id provided' });
                     });
                 }
-                let query = `SELECT * FROM ${this.table} WHERE _id=${Number(req.params.id)}`;
-                return this.pool.query(query);
+                let query = `SELECT * FROM ${this.table} WHERE _id=$1`;
+                return this.pool.query(query, [Number(req.params.id)]);
             }
             catch (error) {
                 return new Promise((resolve, reject) => {
@@ -138,11 +144,16 @@ class BaseClassService {
                 }
                 let data = req.body;
                 let sets = [];
+                let values = [];
+                let i = 1;
                 for (let key in data) {
-                    sets.push(`${key} = '${data[key]}'`);
+                    sets.push(`${key} = $${i}`);
+                    values.push(data[key]);
+                    i++;
                 }
-                let query = ` UPDATE ${this.table} SET ${sets.join(', ')} WHERE _id = ${Number(req.params.id)} RETURNING *`;
-                return this.pool.query(query);
+                values.push(Number(req.params.id));
+                let query = ` UPDATE ${this.table} SET ${sets.join(', ')} WHERE _id = $${i} RETURNING *`;
+                return this.pool.query(query, values);
             }
             catch (error) {
                 return new Promise((resolve, reject) => {
@@ -157,8 +168,8 @@ class BaseClassService {
                         reject({ error: true, failure: 'No id provided' });
                     });
                 }
-                let query = ` DELETE FROM ${this.table} WHERE _id=${Number(req.params.id)}`;
-                return this.pool.query(query);
+                let query = ` DELETE FROM ${this.table} WHERE _id=$1`;
+                return this.pool.query(query, [Number(req.params.id)]);
             }
             catch (error) {
                 return new Promise((resolve, reject) => {
@@ -166,6 +177,10 @@ class BaseClassService {
                 });
             }
         });
+        /**
+         *
+         * @returns Check if a table exists in the db, if not create a table with a schema template based on the joi schema
+         */
         this.checkAndCreateTable = () => __awaiter(this, void 0, void 0, function* () {
             if (this.joiSchema === undefined) {
                 return;

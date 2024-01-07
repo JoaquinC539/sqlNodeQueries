@@ -20,6 +20,12 @@ export abstract class BaseClassService{
     public  table:string
     private joiSchema:ObjectSchema| undefined
 
+    /**
+     * 
+     * @param table Table of the database
+     * @param indexFilters Filters of columns of the table to be able to be filtered
+     * @param joiSchema Schema necesary but optional to create tables with a default schema base on data types
+     */
     constructor(table:string,indexFilters:string[],joiSchema?:ObjectSchema){
         this.table=table;
         this.indexFilters=indexFilters;
@@ -109,8 +115,9 @@ export abstract class BaseClassService{
                     reject({error:true,failure:'No id provided'})
                 })
             }
-            let query:string=`SELECT * FROM ${this.table} WHERE _id=${Number(req.params.id)}`;
-            return this.pool.query(query);
+            
+            let query:string=`SELECT * FROM ${this.table} WHERE _id=$1`;
+            return this.pool.query(query,[Number(req.params.id)]);
         } catch (error) {
            return new Promise((resolve,reject)=>{
                 reject({error:true,failure:error})
@@ -141,11 +148,17 @@ export abstract class BaseClassService{
             }
             let data:JSONObject= req.body;
             let sets:string[]=[]
+            let values:any[]=[];
+            let i=1;
             for(let key in data){
-                sets.push(`${key} = '${data[key]}'`)
+                sets.push(`${key} = $${i}`);
+                values.push(data[key]);
+                i++;
+
             }
-            let query:string=` UPDATE ${this.table} SET ${sets.join(', ')} WHERE _id = ${Number(req.params.id)} RETURNING *`
-            return this.pool.query(query);
+            values.push(Number(req.params.id));
+            let query:string=` UPDATE ${this.table} SET ${sets.join(', ')} WHERE _id = $${i} RETURNING *`;
+            return this.pool.query(query,values);
             
         } catch (error) {
             return new Promise((resolve,reject)=>{
@@ -160,8 +173,8 @@ export abstract class BaseClassService{
                     reject({error:true,failure:'No id provided'})
                 })
             }
-            let query:string=` DELETE FROM ${this.table} WHERE _id=${Number(req.params.id)}`
-            return this.pool.query(query);
+            let query:string=` DELETE FROM ${this.table} WHERE _id=$1`
+            return this.pool.query(query,[Number(req.params.id)]);
         } catch (error) {
             return new Promise((resolve,reject)=>{
                 reject({error:true,failure:error});
@@ -169,6 +182,10 @@ export abstract class BaseClassService{
         }
     }
 
+    /**
+     * 
+     * @returns Check if a table exists in the db, if not create a table with a schema template based on the joi schema
+     */
     private checkAndCreateTable:Function=async():Promise<any>=>{
         if(this.joiSchema===undefined){
             return;
