@@ -27,7 +27,9 @@ export class ClienteController extends BaseClassController{
         return this.clienteJoi;
     }
     public indexORM(req:Request,res:Response):void{
-        OrmDataSource.manager.find(Cliente)
+        const clienteRepository=OrmDataSource.getRepository(Cliente);
+        clienteRepository.find()
+        // OrmDataSource.manager.find(Cliente)
         .then((data:ICliente[])=>{
             res.send(data);
         })
